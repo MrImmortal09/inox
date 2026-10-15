@@ -140,10 +140,14 @@ export function AppLayout({
             </span>
           </div>
 
-          <Badge variant="success" className="hidden md:inline-flex">
-            <Shield className="h-3 w-3 mr-1" aria-hidden="true" />
-            {adminRole === "owner" ? "RBAC OWNER" : "RBAC ADMIN"}
-          </Badge>
+          {/* Only once the backend confirms a role: in demo mode, while loading, or
+              for a session without access, claiming one would be untrue. */}
+          {adminRole && (
+            <Badge variant="success" className="hidden md:inline-flex">
+              <Shield className="h-3 w-3 mr-1" aria-hidden="true" />
+              {adminRole === "owner" ? "RBAC OWNER" : "RBAC ADMIN"}
+            </Badge>
+          )}
 
           <button
             type="button"

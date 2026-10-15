@@ -182,6 +182,15 @@ func TestGrant(t *testing.T) {
 			}
 		})
 	}
+
+	// A grant nobody can be credited with is refused, not stored as anonymous.
+	for name, granter := range map[string]*domain.Session{"nil granter": nil, "granter without user ID": {Username: "ghost"}} {
+		t.Run(name, func(t *testing.T) {
+			if _, err := svc.Grant(ctx, granter, "carol@example.com"); !errors.Is(err, admin.ErrGranterRequired) {
+				t.Errorf("expected ErrGranterRequired, got %v", err)
+			}
+		})
+	}
 }
 
 func TestRevoke(t *testing.T) {

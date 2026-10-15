@@ -15,6 +15,7 @@ import (
 )
 
 var (
+	ErrGranterRequired    = errors.New("the granting owner must be identified")
 	ErrIdentifierRequired = errors.New("an email or username is required")
 	ErrUserNotFound       = errors.New("no user found with that email or username")
 	ErrAlreadyAdmin       = errors.New("this user is already an admin")
@@ -116,6 +117,11 @@ func (s *service) List(ctx context.Context) ([]*domain.AdminAccount, error) {
 
 // Grant takes an email or a username, since owners know their teammates by either.
 func (s *service) Grant(ctx context.Context, granter *domain.Session, identifier string) (*domain.AdminAccount, error) {
+	// Every grant records who made it. A caller that can't be identified is refused
+	// rather than written down as an anonymous grant.
+	if granter == nil || granter.UserID == "" {
+		return nil, ErrGranterRequired
+	}
 	identifier = strings.TrimSpace(identifier)
 	if identifier == "" {
 		return nil, ErrIdentifierRequired
